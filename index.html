@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAETBYEOL Magazine</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Loading: 2초 후 자동으로 사라짐 -->
+  <div id="loading" class="loading-page" aria-label="loading page">
+    <p class="project-label">project_magazine</p>
+    <div class="loading-center">
+     <img 
+  class="star-logo.big" 
+  src="./assets/images/star-logo.svg" 
+  alt=""
+    />
+      <h1>Make it. With SAETBYEOL.</h1>
+    </div>
+  </div>
+
+  <main id="app">
+    <!-- HOME -->
+    <section id="home" class="page home-page is-active">
+      <div class="home-layout">
+        <aside class="home-info">
+          <nav class="side-nav">
+            <button class="nav-link active" data-route="home">HOME</button>
+          </nav>
+
+          <div class="intro-block">
+            <h2>샛별 매거진에<br />방문해주셔서 감사합니다.</h2>
+            <div class="line"></div>
+            <p>
+              LG 전자 샛별자문단이 정리한 AI 영상 제작 가이드로,<br />
+               사내 메일 매거진으로 발송 된 / Vol. 1 / Vol. 2 / 프롬프트 모음을 담았습니다.<br />
+              
+            </p>
+            <p>
+              업무 보고부터 워크샵까지,<br />
+               AI 툴로 누구나 만들 수 있는 영상 제작 가이드입니다.
+            </p>
+          </div>
+
+          <p class="footer-label">project_magazine</p>
+        </aside>
+
+        <section class="home-cards" aria-label="magazine menu">
+         <button 
+                  class="home-card large image-card" 
+                  data-route="vol1" 
+                  style="--card-img: url('./assets/gifs/vol.1.gif');"
+          >
+          <div class="card-title-group">
+            <span class="vol-title">VOL.1</span>
+            <span class="vol-subtitle">업무용 영상편</span>
+          </div>
+          <span class="arrow"></span>
+          </button>
+          <button class="home-card small" data-route="official">
+            <span>공통프롬프트 zip.</span>
+            <span class="arrow">↗</span>
+          </button>
+          <button 
+                  class="home-card large image-card" 
+                  data-route="vol2" 
+                  style="--card-img: url('./assets/gifs/vol.2.gif');"
+                >
+                  <div class="card-title-group">
+            <span class="vol-title">VOL.2</span>
+            <span class="vol-subtitle">워크샵용 영상편</span>
+          </div>
+                </button>
+          <button class="home-card small" data-route="promptzip">
+            <span>유형별프롬프트 zip.</span>
+            <span class="arrow">↗</span>
+          </button>
+        </section>
+      </div>
+    </section>
+
+    <!-- VOL.1 / VOL.2 COMMON PAGE -->
+    <section id="volumePage" class="page volume-page">
+     
+
+      <button class="back-btn" data-route="home" aria-label="back">‹</button>
+
+      <article class="volume-content">
+        <p id="volKicker" class="kicker">VOL.1</p>
+        <h1 id="volTitle">업무 보고용 영상 AI로 쉽게 뚝딱!</h1>
+        <p id="volDesc" class="desc">샛별매거진이 알려주는 AI 쓰리스텝 으로 빠르고 쉽게 만들어요</p>
+
+        <div id="volSteps" class="step-line"></div>
+
+       <div class="video-box" id="mainVideoBox">
+        <span>영상</span>
+      </div>
+        <p class="hint">각 토글 클릭 시 상세 내용을 볼 수 있어요.</p>
+
+        <div id="accordion" class="accordion"></div>
+      </article>
+    </section>
+
+    <!-- OFFICIAL PLACEHOLDER -->
+    <section id="official" class="page simple-page">
+      <header class="sub-header">
+        <button class="brand" data-route="home">
+          <span class="star-logo small" aria-hidden="true"><svg viewBox="0 0 120 120"><path d="M60 11 C67 11 75 34 82 38 C89 42 112 39 115 47 C118 55 99 69 97 77 C95 85 105 105 98 111 C91 117 72 103 63 103 C54 103 36 118 28 112 C20 106 29 85 26 77 C23 69 4 56 6 48 C8 40 31 42 38 38 C45 34 53 11 60 11Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></svg></span>
+          <span>샛별매거진</span>
+        </button>
+      </header>
+      <button class="back-btn" data-route="home">‹</button>
+      <div class="simple-content common-prompt-page">
+  <p class="kicker">COMMON PROMPT ZIP</p>
+  <h1>공통 프롬프트 zip.</h1>
+  <p class="copy-guide">키워드를 클릭하면 바로 복사됩니다.</p>
+   <p id="copyToast" class="copy-toast">copied</p>
+
+  <div id="commonPromptGrid" class="common-prompt-grid"></div>
+
+  <p id="copyToast" class="copy-toast">copied</p>
+</div>
+    </section>
+
+    <!-- PROMPT ZIP -->
+    <section id="promptzip" class="page prompt-page">
+      <div class="bg-video-wrap" aria-hidden="true">
+        <!-- 실제 영상 파일을 넣을 때 src만 바꾸면 됨 -->
+        <video class="bg-video is-active" muted loop playsinline data-bg="0"><source src="./assets/videos/video_1.mp4" type="video/mp4" /></video>
+        <video class="bg-video" muted loop playsinline data-bg="1"><source src="./assets/videos/video_2.mp4" type="video/mp4" /></video>
+        <video class="bg-video" muted loop playsinline data-bg="2"><source src="./assets/videos/video_3.mp4" type="video/mp4" /></video>
+        <video class="bg-video" muted loop playsinline data-bg="3"><source src="./assets/videos/video_4.mp4" type="video/mp4" /></video>
+      </div>
+      <div class="prompt-dim"></div>
+
+      <header class="prompt-top">
+        <button class="prompt-back" data-route="home">‹</button>
+        <span id="pageCount">01 / 04</span>
+      </header>
+
+      <div class="prompt-title"></div>
+
+     <section class="carousel-area">
+  <p id="promptCardHint" class="prompt-card-hint">
+    상세 프롬프트를 보려면 카드를 클릭하세요
+  </p>
+
+  <button class="carousel-btn prev" id="prevCard" aria-label="previous">‹</button>
+  <div id="cardTrack" class="card-track"></div>
+  <button class="carousel-btn next" id="nextCard" aria-label="next">›</button>
+</section>
+  </main>
+
+  <!-- PROMPT MODAL -->
+  <div id="promptModal" class="modal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="closeModal" class="modal-close" aria-label="close">×</button>
+      <p class="kicker">Detailed Prompt</p>
+      <h2 id="modalTitle">Prompt</h2>
+      <pre id="promptText"></pre>
+      <button id="copyPrompt" class="copy-btn">
+        <span class="copy-icon" aria-hidden="true">⧉</span>
+        <span>프롬프트 복사하기</span>
+      </button>
+      <p id="copyState" class="copy-state" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
