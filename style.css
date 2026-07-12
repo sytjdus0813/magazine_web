@@ -564,11 +564,61 @@ button { border: 0; background: none; cursor: pointer; color: inherit; }
   gap: 5px;
 }
 .search-chip {
-  padding: 4px 7px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 10px;
+  border: 1px solid rgba(151, 234, 125, 0.45);
   border-radius: 999px;
+
   background: rgba(151, 234, 125, 0.15);
   color: #b9ffa8;
+
   font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.search-chip:hover {
+  transform: translateY(-1px);
+  background: rgba(151, 234, 125, 0.25);
+  border-color: #b9ffa8;
+}
+
+.search-chip:active {
+  transform: scale(0.97);
+}
+
+.search-chip:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.search-chip.is-ai {
+  border-color: #b38bff;
+  background: rgba(179, 139, 255, 0.14);
+}
+
+.search-chip.is-ai::before {
+  content: "AI";
+  margin-right: 8px;
+
+  color: #c193ff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.search-chip.is-ai:hover {
+  background: rgba(179, 139, 255, 0.24);
+  border-color: #c193ff;
 }
 .card-tags {
   margin: 9px 0 10px;
@@ -1602,31 +1652,3 @@ button { border: 0; background: none; cursor: pointer; color: inherit; }
   display: none;
 }
 
-.search-chip.is-ai {
-  position: relative;
-  border: 1px solid #b38bff;
-  background: rgba(179, 139, 255, 0.12);
-}
-
-.search-chip.is-ai::before {
-  content: "AI";
-  margin-right: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #b38bff;
-}
-
-.search-loading,
-.search-error {
-  display: inline-block;
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-.search-loading {
-  opacity: 0.7;
-}
-
-.search-error {
-  color: #d44;
-}

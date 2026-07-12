@@ -976,18 +976,28 @@ function renderCards() {
 
   input.addEventListener('click', event => event.stopPropagation());
 });
-  $$('.prompt-card', track).forEach(card => {
-    card.addEventListener('click', () => {
-      const index = Number(card.dataset.index);
-      if (index !== activeCard) {
-        activeCard = index;
-        updateCarousel();
-        playActiveVideo();
-        return;
-      }
-      openPromptModal(index);
-    });
+$$('.prompt-card', track).forEach(card => {
+  card.addEventListener('click', event => {
+    // 검색창이나 키워드 칩을 누른 경우 카드 모달을 열지 않음
+    if (
+      event.target.closest('.keyword-search') ||
+      event.target.closest('.search-chip')
+    ) {
+      return;
+    }
+
+    const index = Number(card.dataset.index);
+
+    if (index !== activeCard) {
+      activeCard = index;
+      updateCarousel();
+      playActiveVideo();
+      return;
+    }
+
+    openPromptModal(index);
   });
+});
 }
 // 키워드 변환기: 한글 검색어 → 영어 추천 키워드(AI 영상 생성 프롬프트용)
 // 사용법: keywordDictionary['럭셔리'] → ['luxurious fine dining ambiance', ...]
@@ -1192,9 +1202,15 @@ async function getGeminiSuggestions(query) {
 function renderSearchChips(words, isAi = false) {
   return words
     .map(word => `
-      <span class="search-chip${isAi ? ' is-ai' : ''}">
+      <button
+        type="button"
+        class="search-chip${isAi ? ' is-ai' : ''}"
+        data-copy="${encodeURIComponent(word)}"
+        aria-label="${escapeHtml(word)} 복사"
+        title="클릭해서 복사"
+      >
         ${escapeHtml(word)}
-      </span>
+      </button>
     `)
     .join('');
 }
