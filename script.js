@@ -7,9 +7,21 @@ const WORKER_URL = 'https://saetbyeol-gemini-proxy.sytjdus0813.workers.dev/gener
 const geminiCache = new Map();
 const geminiTimers = new WeakMap();
 /* 2초 로딩 */
-window.addEventListener('load', () => {
-  setTimeout(() => $('#loading')?.classList.add('is-hide'), 1500);
+/* 로딩 화면 종료 */
+function hideLoading() {
+  $('#loading')?.classList.add('is-hide');
+}
+
+// HTML 구조가 준비되면 로딩 종료
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(hideLoading, 1200);
 });
+
+// 이미지·영상까지 모두 로드된 경우에도 종료
+window.addEventListener('load', hideLoading);
+
+// 어떤 파일이 로드되지 않아도 최대 4초 후 강제 종료
+setTimeout(hideLoading, 4000);
 
 /* 라우팅 */
 const pages = $$('.page');
