@@ -1601,3 +1601,32 @@ button { border: 0; background: none; cursor: pointer; color: inherit; }
 #official .sub-header {
   display: none;
 }
+
+.search-chip.is-ai {
+  position: relative;
+  border: 1px solid #b38bff;
+  background: rgba(179, 139, 255, 0.12);
+}
+
+.search-chip.is-ai::before {
+  content: "AI";
+  margin-right: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #b38bff;
+}
+
+.search-loading,
+.search-error {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.search-loading {
+  opacity: 0.7;
+}
+
+.search-error {
+  color: #d44;
+}
