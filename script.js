@@ -1,6 +1,11 @@
 const $ = (selector, parent = document) => parent.querySelector(selector);
 const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
 
+
+const WORKER_URL = 'https://saetbyeol-gemini-proxy.sytjdus0813.workers.dev/generate';
+
+const geminiCache = new Map();
+const geminiTimers = new WeakMap();
 /* 2초 로딩 */
 window.addEventListener('load', () => {
   setTimeout(() => $('#loading')?.classList.add('is-hide'), 1500);
@@ -911,20 +916,54 @@ function renderCards() {
 
   updateCarousel();
 
-  $$('.keyword-search', track).forEach(input => {
-    input.addEventListener('input', (event) => {
-      const cardEl = event.target.closest('.prompt-card');
-      const index = Number(cardEl.dataset.index);
-      const result = $('.search-result', cardEl);
-      const query = event.target.value.trim();
-      result.innerHTML = getKeywordResult(index, query)
-        .map(word => `<span class="search-chip">${word}</span>`)
-        .join('');
-    });
+ $$('.keyword-search', track).forEach(input => {
+  input.addEventListener('input', event => {
+    const cardEl = event.target.closest('.prompt-card');
+    const index = Number(cardEl.dataset.index);
+    const result = $('.search-result', cardEl);
+    const query = event.target.value.trim();
 
-    input.addEventListener('click', event => event.stopPropagation());
+    clearTimeout(geminiTimers.get(input));
+
+    if (!query) {
+      result.innerHTML = '';
+      return;
+    }
+
+    // 사전에 있는 단어는 기존 결과를 바로 표시
+    const dictionaryResults = getKeywordResult(index, query);
+
+    if (dictionaryResults.length > 0) {
+      result.innerHTML = renderSearchChips(dictionaryResults);
+      return;
+    }
+
+    // 사전에 없는 단어는 0.5초 후 Gemini 요청
+    result.innerHTML = '<span class="search-loading">AI 추천 생성 중...</span>';
+
+    const timer = setTimeout(async () => {
+      try {
+        const suggestions = await getGeminiSuggestions(query);
+
+        // API 응답 전에 검색어가 바뀌었으면 이전 결과를 표시하지 않음
+        if (input.value.trim() !== query) return;
+
+        result.innerHTML = renderSearchChips(suggestions, true);
+      } catch (error) {
+        console.error('Gemini API error:', error);
+
+        if (input.value.trim() !== query) return;
+
+        result.innerHTML =
+          '<span class="search-error">추천을 불러오지 못했어요.</span>';
+      }
+    }, 500);
+
+    geminiTimers.set(input, timer);
   });
 
+  input.addEventListener('click', event => event.stopPropagation());
+});
   $$('.prompt-card', track).forEach(card => {
     card.addEventListener('click', () => {
       const index = Number(card.dataset.index);
@@ -1089,6 +1128,84 @@ function getKeywordResult(index, query) {
     .flatMap(([, values]) => values)
     .slice(0, 6);
 }
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+async function getGeminiSuggestions(query) {
+  const cacheKey = normalizeKeyword(query);
+
+  if (geminiCache.has(cacheKey)) {
+    return geminiCache.get(cacheKey);
+  }
+
+  const response = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Worker error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+
+  if (suggestions.length === 0) {
+    throw new Error('No suggestions returned.');
+  }
+
+  geminiCache.set(cacheKey, suggestions);
+  return suggestions;
+
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  const text =
+    data?.candidates?.[0]?.content?.parts?.map(part => part.text).join('\n') || '';
+
+  const suggestions = text
+    .split('\n')
+    .map(line => line.replace(/^[-*\d.)\s]+/, '').trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  if (suggestions.length === 0) {
+    throw new Error('No suggestions returned.');
+  }
+
+  geminiCache.set(cacheKey, suggestions);
+  return suggestions;
+}
+function renderSearchChips(words, isAi = false) {
+  return words
+    .map(word => `
+      <span class="search-chip${isAi ? ' is-ai' : ''}">
+        ${escapeHtml(word)}
+      </span>
+    `)
+    .join('');
+
+function renderSearchChips(words, isAi = false) {
+  return words
+    .map(word => `
+      <span class="search-chip${isAi ? ' is-ai' : ''}">
+        ${escapeHtml(word)}
+      </span>
+    `)
+    .join('');
+}
+}
 
 function updateCarousel() {
   const total = promptCards.length;
@@ -1210,18 +1327,6 @@ function updateStepProgress() {
     }
   });
 
-
-stepItems.forEach((item, index) => {
-  item.classList.remove("is-active", "is-done");
-
-  if (index < activeIndex) {
-    item.classList.add("is-done");
-  }
-
-  if (index === activeIndex) {
-    item.classList.add("is-active");
-  }
-});
 }
 window.addEventListener("scroll", updateStepProgress);
 window.addEventListener("resize", updateStepProgress);
