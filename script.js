@@ -1146,55 +1146,36 @@ async function getGeminiSuggestions(query) {
 
   const response = await fetch(WORKER_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query })
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      query
+    })
   });
 
+  const data = await response
+    .json()
+    .catch(() => ({}));
+
   if (!response.ok) {
-    throw new Error(`Worker error: ${response.status}`);
+    throw new Error(
+      data.error || `Worker error: ${response.status}`
+    );
   }
 
-  const data = await response.json();
-  const suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+  const suggestions = Array.isArray(data.suggestions)
+    ? data.suggestions.slice(0, 3)
+    : [];
 
   if (suggestions.length === 0) {
-    throw new Error('No suggestions returned.');
+    throw new Error('추천 결과가 비어 있습니다.');
   }
 
   geminiCache.set(cacheKey, suggestions);
-  return suggestions;
 
-
-  if (!response.ok) {
-    throw new Error(`Gemini API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-
-  const text =
-    data?.candidates?.[0]?.content?.parts?.map(part => part.text).join('\n') || '';
-
-  const suggestions = text
-    .split('\n')
-    .map(line => line.replace(/^[-*\d.)\s]+/, '').trim())
-    .filter(Boolean)
-    .slice(0, 3);
-
-  if (suggestions.length === 0) {
-    throw new Error('No suggestions returned.');
-  }
-
-  geminiCache.set(cacheKey, suggestions);
   return suggestions;
 }
-function renderSearchChips(words, isAi = false) {
-  return words
-    .map(word => `
-      <span class="search-chip${isAi ? ' is-ai' : ''}">
-        ${escapeHtml(word)}
-      </span>
-    `)
-    .join('');
 
 function renderSearchChips(words, isAi = false) {
   return words
@@ -1204,7 +1185,6 @@ function renderSearchChips(words, isAi = false) {
       </span>
     `)
     .join('');
-}
 }
 
 function updateCarousel() {
