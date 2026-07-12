@@ -154,6 +154,8 @@
 </section>
   </main>
 
+</main>
+
 <p
   id="copyToast"
   class="copy-toast"
@@ -165,21 +167,32 @@
 
 <!-- PROMPT MODAL -->
 <div id="promptModal" class="modal" aria-hidden="true">
+  <div
+    class="modal-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+  >
+    <button id="closeModal" class="modal-close" aria-label="close">
+      ×
+    </button>
 
-  <!-- PROMPT MODAL -->
-  <div id="promptModal" class="modal" aria-hidden="true">
-    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button id="closeModal" class="modal-close" aria-label="close">×</button>
-      <p class="kicker">Detailed Prompt</p>
-      <h2 id="modalTitle">Prompt</h2>
-      <pre id="promptText"></pre>
-      <button id="copyPrompt" class="copy-btn">
-        <span class="copy-icon" aria-hidden="true">⧉</span>
-        <span>프롬프트 복사하기</span>
-      </button>
-      <p id="copyState" class="copy-state" aria-live="polite"></p>
-    </div>
+    <p class="kicker">Detailed Prompt</p>
+    <h2 id="modalTitle">Prompt</h2>
+    <pre id="promptText"></pre>
+
+    <button id="copyPrompt" class="copy-btn" type="button">
+      <span class="copy-icon" aria-hidden="true">⧉</span>
+      <span>프롬프트 복사하기</span>
+    </button>
+
+    <p
+      id="copyState"
+      class="copy-state"
+      aria-live="polite"
+    ></p>
   </div>
+</div>
 
   <script src="./script.js"></script>
 </body>

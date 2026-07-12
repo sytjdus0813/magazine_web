@@ -773,29 +773,57 @@ function showCopyToast() {
     toast.classList.remove('is-show');
   }, 900);
 }
+function fallbackCopyText(text) {
+  const temp = document.createElement('textarea');
+
+  temp.value = text;
+  temp.setAttribute('readonly', '');
+  temp.style.position = 'fixed';
+  temp.style.top = '0';
+  temp.style.left = '-9999px';
+  temp.style.opacity = '0';
+
+  document.body.appendChild(temp);
+
+  temp.focus();
+  temp.select();
+  temp.setSelectionRange(0, temp.value.length);
+
+  const copied = document.execCommand('copy');
+
+  temp.remove();
+
+  return copied;
+}
 
 async function copyKeyword(text) {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      const temp = document.createElement('textarea');
-      temp.value = text;
-      temp.style.position = 'fixed';
-      temp.style.left = '-9999px';
-      document.body.appendChild(temp);
-      temp.focus();
-      temp.select();
-      document.execCommand('copy');
-      temp.remove();
-    }
+  let copied = false;
 
-    showCopyToast();
-  } catch (error) {
-    console.error('copy failed:', error);
-    showCopyToast();
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    } catch (error) {
+      console.warn('Clipboard API failed:', error);
+    }
   }
+
+  // 기본 복사가 실패하면 예전 방식으로 다시 시도
+  if (!copied) {
+    copied = fallbackCopyText(text);
+  }
+
+  const toast = $('#copyToast');
+
+  if (toast) {
+    toast.textContent = copied
+      ? '키워드가 복사됐어요!'
+      : '복사에 실패했어요.';
+  }
+
+  showCopyToast();
 }
+
 /* Prompt Zip 데이터: 카드, 프롬프트, 검색 키워드만 여기서 수정 */
 const promptCards = [
   {
