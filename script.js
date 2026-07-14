@@ -88,7 +88,7 @@ const volumeData = {
   vol1: {
     kicker: 'VOL.1',
     title: '업무 보고용 영상 AI로 쉽게 뚝딱!',
-    desc: '샛별매거진이 알려주는 AI 쓰리스템으로 빠르고 쉽게 만들어요',
+    desc: '샛별매거진이 알려주는 AI 쓰리스텝으로 빠르고 쉽게 만들어요',
     mainVideo: './assets/videos/video_2.mp4',
     poster: './assets/images/vol1-thumb.jpg',
     steps: [
@@ -187,18 +187,34 @@ const volumeData = {
 
         <h3>영상 제작에 공통으로 들어가는 9가지 요소</h3>
 
-        <ul class="keyword-list grouped">
-          <li class="group-a">포맷 / 규격 / 길이·속도</li>
-          <li class="group-a">영상 스타일</li>
-          <li class="group-a">카메라 구도 및 렌즈</li>
-          <li class="group-b">조명 / 분위기</li>
-          <li class="group-b">피사체 움직임</li>
-          <li class="group-b">컬러 / 브랜딩 / 그래픽</li>
-          <li class="group-b">음악 / 사운드</li>
-          <li class="group-a">목적 / 출력 용도</li>
-          <li class="group-a">품질 / 렌더링</li>
-        </ul>
+<div class="keyword-category-grid">
 
+  <section class="keyword-category technical-category">
+    <h4 class="keyword-category-title">기술적 요소</h4>
+
+    <ul class="keyword-category-list">
+      <li>포맷 / 규격 / 길이·속도</li>
+      <li>영상 스타일</li>
+      <li>카메라 구도 및 렌즈</li>
+      <li>목적 / 출력 용도</li>
+      <li>품질 / 렌더링</li>
+    </ul>
+  </section>
+
+  <section class="keyword-category directing-category">
+    <h4 class="keyword-category-title">연출적 요소</h4>
+
+    <ul class="keyword-category-list">
+      <li>조명 / 분위기</li>
+      <li>피사체 움직임</li>
+      <li>컬러 / 브랜딩 / 그래픽</li>
+      <li>음악 / 사운드</li>
+    </ul>
+  </section>
+
+</div>
+
+      
        <div class="zip-center">
   <button class="zip-link box" type="button" data-route="official">
     &gt; 공통 프롬프트 모음 zip 바로가기
@@ -743,23 +759,88 @@ const commonPromptGroups = [
     keywords: ['cinematic', 'photorealistic', '8K', 'high detail', 'sharp focus', 'ultra HD', 'HDR', 'film grain', 'no motion blur', 'no artifacts', 'ray tracing', 'anti-aliasing', 'depth of field', 'global illumination', 'realistic shadows', 'realistic reflections', 'noise-free', 'crisp detail', 'color accurate', 'path tracing', 'physically based rendering PBR', 'subsurface scattering', 'volumetric fog', 'texture detail', 'physically accurate materials', 'physically accurate lighting', 'professional grade render', 'studio-quality finish', 'high polygon count', 'cinematic depth', 'real-time render']
   }
 ];
-
 function renderCommonPromptZip() {
   const grid = $('#commonPromptGrid');
+
   if (!grid) return;
 
+  // 처음에는 모든 카드가 닫힌 상태
   grid.innerHTML = commonPromptGroups.map(group => `
     <section class="common-prompt-card">
-      <h2>${group.title}</h2>
+      <h2>
+        <button
+          class="common-prompt-toggle"
+          type="button"
+          aria-expanded="false"
+        >
+          <span>${group.title}</span>
+
+          <span
+            class="common-prompt-plus"
+            aria-hidden="true"
+          >
+            ＋
+          </span>
+        </button>
+      </h2>
+
       <div class="common-keyword-list">
         ${group.keywords.map(keyword => `
-          <button class="common-keyword" type="button" data-copy="${encodeURIComponent(keyword)}">
-  ${keyword}
-</button>
+          <button
+            class="common-keyword"
+            type="button"
+            data-copy="${encodeURIComponent(keyword)}"
+          >
+            ${keyword}
+          </button>
         `).join('')}
       </div>
     </section>
   `).join('');
+
+  const cards = $$('.common-prompt-card', grid);
+  const toggles = $$('.common-prompt-toggle', grid);
+
+  toggles.forEach(toggle => {
+    toggle.addEventListener('click', event => {
+      event.stopPropagation();
+
+      // 데스크톱에서는 기존 화면과 동작 유지
+      if (!window.matchMedia('(max-width: 680px)').matches) {
+        return;
+      }
+
+      const selectedCard =
+        toggle.closest('.common-prompt-card');
+
+      const isCurrentlyOpen =
+        selectedCard.classList.contains('is-open');
+
+      // 우선 모든 카드를 닫음
+      cards.forEach(card => {
+        card.classList.remove('is-open');
+
+        const cardToggle =
+          $('.common-prompt-toggle', card);
+
+        cardToggle?.setAttribute(
+          'aria-expanded',
+          'false'
+        );
+      });
+
+      // 원래 닫혀 있던 카드라면 해당 카드만 열기
+      // 이미 열려 있던 카드라면 위에서 닫힌 상태로 유지
+      if (!isCurrentlyOpen) {
+        selectedCard.classList.add('is-open');
+
+        toggle.setAttribute(
+          'aria-expanded',
+          'true'
+        );
+      }
+    });
+  });
 }
 
 function showCopyToast() {
