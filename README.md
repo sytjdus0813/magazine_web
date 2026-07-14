@@ -1,5 +1,5 @@
 # project_magazine
-
+# ㅎㅇㅎㅇ
 ## 구조
 - `index.html`: 전체 페이지 구조
 - `style.css`: 반응형 레이아웃 / 디자인
